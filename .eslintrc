@@ -1,0 +1,40 @@
+{
+  "parser": "babel-eslint",
+  "extends": ["airbnb", "plugin:react/recommended"],
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "plugins": [
+    "babel"
+  ],
+  "settings": {
+    "react": {
+      "pragma": "React",
+      "version": "15.3"
+    }
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    "max-len": 0,
+    "semi": [2, "never"],
+    "import/no-extraneous-dependencies": 0,
+    "import/no-unresolved": 0,
+    "react/jsx-quotes": 0,
+    "jsx-quotes": [2, "prefer-double"],
+    "new-cap": 0,
+    "jsx-a11y/anchor-has-content": 0,
+    "babel/new-cap": 0,
+    "global-require": 0,
+    "babel/generator-star-spacing": 0,
+    "babel/array-bracket-spacing": 1,
+    "babel/object-shorthand": 1,
+    "babel/arrow-parens": 0,
+    "no-constant-condition": 0,
+    "import/prefer-default-export": 0
+  }
+}
