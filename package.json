@@ -12,8 +12,9 @@
   "private": true,
   "scripts": {
     "start:server": "rm -rf ./build && webpack --config  webpack.config.server.js",
-    "start:client": "webpack-dev-server --config webpack.config.client.js",
+    "start": "webpack --config webpack.config.client.js -w",
     "start1": "rm -rf ./build && npm-run-all --parallel start:server start:client",
+    "dev": "browser-sync start -s -b \"google chrome' -f \"./index.html\" \"public/*.css\" \"src/js/**",
     "build": "webpack --config webpack.config.production.js"
   },
   "dependencies": {
@@ -24,13 +25,6 @@
     "imagesloaded": "^4.1.3",
     "morgan": "^1.8.2",
     "pug": "^2.0.0-rc.4",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2",
-    "react-redux": "^5.0.5",
-    "react-router": "^4.2.0",
-    "react-router-dom": "^4.2.2",
-    "react-router-redux": "^4.0.8",
-    "redux": "^3.7.2",
     "serve-favicon": "^2.4.4"
   },
   "devDependencies": {
@@ -42,6 +36,8 @@
     "babel-plugin-css-modules-transform": "^1.2.7",
     "babel-preset-env": "^1.1.10",
     "babel-preset-react": "^6.23.0",
+    "browser-sync": "^2.18.13",
+    "browser-sync-webpack-plugin": "^1.2.0",
     "css-loader": "^0.28.4",
     "eslint": "^4.7.0",
     "eslint-config-airbnb": "^15.1.0",
@@ -52,12 +48,7 @@
     "extract-text-webpack-plugin": "^2.1.2",
     "node-sass": "^4.5.3",
     "npm-run-all": "^4.0.2",
-    "null-loader": "^0.1.1",
     "postcss-loader": "^2.0.6",
-    "react-css-modules": "^4.7.1",
-    "react-hot-loader": "next",
-    "react-router-config": "^1.0.0-beta.4",
-    "redux-devtools-extension": "^2.13.2",
     "sass-loader": "^6.0.6",
     "start-server-webpack-plugin": "^2.1.2",
     "style-loader": "^0.18.2",

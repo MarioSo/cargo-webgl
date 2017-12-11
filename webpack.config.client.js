@@ -1,17 +1,18 @@
 const webpack = require('webpack')
 const path = require('path')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
 
 const rootPath = path.resolve(__dirname)
 const assetPath = `${rootPath}/public`
-
+var bs_config = require('./bs-config.js')
 const extractSass = new ExtractTextPlugin({
   filename: '[name].css',
   disable: process.env.NODE_ENV === 'development',
 })
 
 module.exports = {
-  devtool: false,
+  devtool: 'inline-source-map',
   entry: [
     './src/js/index',
   ],
@@ -29,11 +30,11 @@ module.exports = {
       {
         test: /\.jsx?$/,
         use: 'babel-loader',
-        // include: [
-        //   // path.join(__dirname, 'client'),
-        //   // path.join(__dirname, 'common'),
-        //   // path.join(__dirname, 'server'),
-        // ],
+        include: [
+          path.join(__dirname, 'client'),
+          path.join(__dirname, 'common'),
+          path.join(__dirname, 'server'),
+        ],
       }, {
         test: /\.scss$/,
         exclude: `${rootPath}/node_modules`,
@@ -44,21 +45,20 @@ module.exports = {
             options: {
               sourceMap: true,
               importLoaders: 1,
-              modules: true,
-              localIdentName: '[name]-[hash:base64:5]',
+              modules: false,
             },
           },
-          {
-            loader: 'postcss-loader',
-            options: {
-              sourceMap: true,
+            {
+              loader: 'postcss-loader',
+              options: {
+                sourceMap: true,
+              },
+            }, {
+              loader: 'sass-loader',
+              options: {
+                sourceMap: true,
+              },
             },
-          }, {
-            loader: 'sass-loader',
-            options: {
-              sourceMap: true,
-            },
-          },
           ],
         }),
       },
@@ -67,10 +67,11 @@ module.exports = {
   plugins: [
     extractSass,
     new webpack.NamedModulesPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
+    // new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.DefinePlugin({
       'process.env': { BUILD_TARGET: JSON.stringify('client') },
     }),
+    new BrowserSyncPlugin(bs_config, { reload: false }),
   ],
 }
