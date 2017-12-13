@@ -1,8 +1,9 @@
 'use strict';
 
-const NUM_VERTS = 8
+const NUM_VERTS = 64
 const RADIUS = 0.2
 const IMG_SRC = 'v2-cute-cat-picture.jpg'
+var g_showGrid = false
 
 var g_canvas, gl
 var g_image
@@ -11,18 +12,20 @@ var g_positionLocation, g_texCoordLocation
 var g_imageUniform
 var g_texture
 var g_program, g_lineProgram
-var g_vertices, g_texCoords, g_indices, g_linesIndices
+var g_vertices
+var g_origVertices
+var g_texCoords
+var g_indices
+var g_linesIndices
 
 var g_mouse = {
   mouseDown: false,
   mousePos: {
     x: 0,
-    y: 0
+    y: 0,
   }
 }
 
-var g_showGrid = true;
-var g_radiusElement;
 
 function onImageLoaded() {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, g_image);
@@ -79,40 +82,47 @@ function normalise(a) {
 
 function onMouseMove(event) {
     if (g_mouse.mouseDown) {
-        var pos = { x: 0, y: 0 };
-        pos.x = (event.clientX / (g_canvas.width - 1));
-        pos.y = (event.clientY / (g_canvas.height - 1));
-        pos.x = (pos.x * 2) - 1;
-        pos.y = 1 - (pos.y * 2);
+      var pos = { x: 0, y: 0 };
+      // convert to webgl coordinates -1 1 etc.
+      pos.x = (event.clientX / (g_canvas.width - 1));
+      pos.y = (event.clientY / (g_canvas.height - 1));
+      pos.x = (pos.x * 2) - 1;
+      pos.y = 1 - (pos.y * 2);
 
-        var repaint = false;
+      var repaint = false;
 
-        for (var i = 0; i < g_vertices.length; i += 2) {
-          var v = {
-            x: g_vertices[i],
-            y: g_vertices[i+1]
+      for (var i = 0; i < g_vertices.length; i += 2) {
+        var v = {
+          x: g_vertices[i],
+          y: g_vertices[i+1]
+        }
+
+        var l = distance(pos, v)
+
+        if (l < RADIUS) {
+          var dir = sub(v, pos);
+          dir = mul(dir, l);
+          if (event.ctrlKey) {
+            dir = mul(dir, l - RADIUS / 4);
+          } else {
+            dir = mul(dir, RADIUS - l * 1.1);
           }
-
-          var l = distance(pos, v)
-
-          if (l < RADIUS) {
-            var dir = sub(v, pos);
-            dir = mul(dir, l);
-            if (event.ctrlKey) {
-              dir = mul(dir, l - RADIUS);
-            } else {
-              dir = mul(dir, RADIUS - l);
-            }
-            v = add(v, dir);
-            g_vertices[i] = v.x;
-            g_vertices[i+1] = v.y;
+          v = add(v, dir);
+          g_vertices[i] = v.x;
+          g_vertices[i+1] = v.y;
+          repaint = true;
+        } else {
+          if(g_vertices[i] !== g_origVertices[i]) {
+            g_vertices[i] = g_origVertices[i];
+            g_vertices[i+1] = g_origVertices[i+1]
             repaint = true;
           }
         }
+      }
 
-        if (repaint) {
-            render();
-        }
+      if (repaint) {
+        render();
+      }
     }
 }
 
@@ -164,6 +174,7 @@ function init(doHandlers) {
 
     var numVerts = NUM_VERTS * NUM_VERTS;
     g_vertices = new Float32Array(numVerts * 2);
+    g_origVertices = new Float32Array(numVerts * 2);
     g_texCoords = new Float32Array(numVerts * 2);
 
     var x, y;
@@ -174,15 +185,19 @@ function init(doHandlers) {
             g_vertices[vertIndex] = ((x / (NUM_VERTS - 1)) * 2) - 1;
             g_vertices[vertIndex + 1] = ((y / (NUM_VERTS - 1)) * 2) - 1;
 
+            g_origVertices[vertIndex] = ((x / (NUM_VERTS - 1)) * 2) - 1;
+            g_origVertices[vertIndex + 1] = ((y / (NUM_VERTS - 1)) * 2) - 1;
+
             g_texCoords[vertIndex] = (x / (NUM_VERTS - 1));
             g_texCoords[vertIndex + 1] = 1 - (y / (NUM_VERTS - 1));
 
             vertIndex += 2;
         }
     }
-    console.log('vertices', g_vertices)
+    console.log('vertices', g_vertices, g_vertices.length)
     console.log('texCoords', g_texCoords)
 
+    // g_origVertices = g_vertices
     vertIndex = 0;
     var numTriangles = ((NUM_VERTS - 1) * (NUM_VERTS - 1)) * 2;
     console.log('# triangles', numTriangles)

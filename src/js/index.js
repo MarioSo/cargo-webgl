@@ -1,14 +1,15 @@
-// import pixi from './pixijs' // first demo aqua magnify
+// import pixi from './pixijs-1' // first demo aqua magnify
 // import pixi from './resize'
 // import liquify from './liquify-one'
 // import liquify from './liquify-two'
-import smokey from './smoke'
-import waterImage from './water-image'
-import simpleDisplacement from './simple-displacement'
-import smear from './smear'
-import wobble from './wobble'
-import regl from './regl'
-import water from './three-water'
+// import smokey from './smoke'
+// import waterImage from './water-image'
+// import simpleDisplacement from './simple-displacement'
+// import smear from './smear'
+// import wobble from './wobble'
+// import regl from './regl'
+// import water from './three-water'
+import waterFluid from '../../public/water-fluid/main'
 import styles from '../styles/styles.scss'
 
 
@@ -22,7 +23,9 @@ const docReady = (/* event */) => {
   // smear()
   // wobble()
   // regl()
-  water()
+  // water()
+  waterFluid()
+
 }
 
 const init = () => {

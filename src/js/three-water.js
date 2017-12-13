@@ -13,6 +13,7 @@ const water = () => {
   // Texture width for simulation
   var WIDTH = hash || 128;
   var NUM_TEXELS = WIDTH * WIDTH;
+  const IMG_SRC = 'public/turtle-512.jpg'
 
   // Water size in system units
   var BOUNDS = 512;
@@ -23,6 +24,10 @@ const water = () => {
   var mouseMoved = false;
   var mouseCoords = new THREE.Vector2();
   var raycaster = new THREE.Raycaster();
+
+  // camera
+  let radius = 500
+  let angle = 0
 
   var waterMesh;
   var meshRay;
@@ -55,13 +60,19 @@ const water = () => {
   init();
   animate();
 
+
   function init() {
 
     container = document.createElement( 'div' );
     document.body.appendChild( container );
 
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 3000 );
-    camera.position.set( 0, 200, 350 );
+    var viewSize = 1000;
+    var radius = 500;
+    var angle = 1;
+    var aspect = window.innerWidth / window.innerHeight;
+    camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 60, 3000);
+    camera.position.set(0, 500, 0);
+    camera.rotation.x = -90 * Math.PI / 180;
 
     scene = new THREE.Scene();
 
@@ -76,13 +87,10 @@ const water = () => {
     renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );
+    // renderer.setClearColor( 0x000000, 0);
     container.appendChild( renderer.domElement );
 
-    // controls = new THREE.OrbitControls( camera, renderer.domElement );
 
-
-    // stats = new Stats();
-    // container.appendChild( stats.dom );
 
     document.addEventListener( 'mousemove', onDocumentMouseMove, false );
     document.addEventListener( 'touchstart', onDocumentTouchStart, false );
@@ -106,19 +114,18 @@ const water = () => {
     var gui = new dat.GUI();
 
     var effectController = {
-      mouseSize: 20.0,
-      viscosity: 0.03
+      mouseSize: 10.0,
+      viscosity: 0.08
     };
 
     var valuesChanger = function() {
-
       heightmapVariable.material.uniforms.mouseSize.value = effectController.mouseSize;
       heightmapVariable.material.uniforms.viscosityConstant.value = effectController.viscosity;
-
     };
 
     gui.add( effectController, "mouseSize", 1.0, 100.0, 1.0 ).onChange( valuesChanger );
     gui.add( effectController, "viscosity", 0.0, 0.1, 0.001 ).onChange( valuesChanger );
+
     var buttonSmooth = {
       smoothWater: function() {
         smoothWater();
@@ -126,58 +133,93 @@ const water = () => {
     };
     gui.add( buttonSmooth, 'smoothWater' );
 
-
+    // initSimplePane()
     initWater();
+    // valuesChanger();
 
-    valuesChanger();
+    renderer.render( scene, camera );
+  }
+
+  function initSimplePane() {
+    var geometry = new THREE.BoxBufferGeometry( 100, 100, 100 );
+    var material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+    // var mesh = new THREE.Mesh(geometry, material);
+    // scene.add(mesh);
+    var loader = new THREE.TextureLoader();
+    loader.load('public/turtle-512.jpg', function ( texture ) {
+      // var geometry = new THREE.SphereGeometry(1000, 20, 20);
+      // var material = new THREE.MeshBasicMaterial({map: texture, overdraw: 0.5});
+
+      var geometry = new THREE.BoxBufferGeometry( 100, 100, 100 );
+      var material = new THREE.MeshBasicMaterial({
+        map: texture,
+        overdraw: 0.5
+      })
+      var mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
+      renderer.render( scene, camera );
+    });
 
   }
 
 
   function initWater() {
 
-    var materialColor = 0x0040C0;
+    var loader = new THREE.TextureLoader();
+    let material
+    loader.load(IMG_SRC, function ( texture ) {
 
-    var geometry = new THREE.PlaneBufferGeometry( BOUNDS, BOUNDS, WIDTH - 1, WIDTH -1 );
+      var materialColor = 0x0040C0;
+      var geometry = new THREE.PlaneBufferGeometry( BOUNDS, BOUNDS, WIDTH - 1, WIDTH -1 );
 
-    // material: make a ShaderMaterial clone of MeshPhongMaterial, with customized vertex shader
-    var material = new THREE.ShaderMaterial( {
-      uniforms: THREE.UniformsUtils.merge( [
-        THREE.ShaderLib[ 'phong' ].uniforms,
-        {
-          heightmap: { value: null }
-        }
-      ] ),
-      vertexShader: document.getElementById( 'waterVertexShader' ).textContent,
-      fragmentShader: THREE.ShaderChunk[ 'meshphong_frag' ]
+      // material: make a ShaderMaterial clone of MeshPhongMaterial, with customized vertex shader
+      material = new THREE.ShaderMaterial( {
+        uniforms: THREE.UniformsUtils.merge( [
+          THREE.ShaderLib[ 'phong' ].uniforms,
+          {
+            heightmap: { value: null },
+          }
+        ] ),
+        vertexShader: document.getElementById( 'waterVertexShader' ).textContent,
+        fragmentShader: THREE.ShaderChunk[ 'meshphong_frag' ]
+      });
 
-    } );
 
-    material.lights = true;
+      // material = new THREE.MeshBasicMaterial({
+      //   map: texture,
+      //   overdraw: 0.5,
+      // })
 
-    // Material attributes from MeshPhongMaterial
-    material.color = new THREE.Color( materialColor );
-    material.specular = new THREE.Color( 0x111111 );
-    material.shininess = 50;
 
-    // Sets the uniforms with the material values
-    material.uniforms.diffuse.value = material.color;
-    material.uniforms.specular.value = material.specular;
-    material.uniforms.shininess.value = Math.max( material.shininess, 1e-4 );
-    material.uniforms.opacity.value = material.opacity;
 
-    // Defines
-    material.defines.WIDTH = WIDTH.toFixed( 1 );
-    material.defines.BOUNDS = BOUNDS.toFixed( 1 );
+      material.lights = true;
 
-    waterUniforms = material.uniforms;
+      // Material attributes from MeshPhongMaterial
+      material.color = new THREE.Color( materialColor );
+      material.specular = new THREE.Color( 0x111111 );
+      material.shininess = 50;
 
-    waterMesh = new THREE.Mesh( geometry, material );
-    waterMesh.rotation.x = - Math.PI / 2;
-    waterMesh.matrixAutoUpdate = false;
-    waterMesh.updateMatrix();
+      // Sets the uniforms with the material values
+      material.uniforms.diffuse.value = material.color;
+      material.uniforms.specular.value = material.specular;
+      material.uniforms.shininess.value = Math.max( material.shininess, 1e-4 );
+      material.uniforms.opacity.value = material.opacity;
+      //
+      // // Defines
+      material.defines.WIDTH = WIDTH.toFixed( 1 );
+      material.defines.BOUNDS = BOUNDS.toFixed( 1 );
 
-    scene.add( waterMesh );
+      waterUniforms = material.uniforms;
+      console.log(material.uniforms)
+
+      waterMesh = new THREE.Mesh( geometry, material );
+      waterMesh.rotation.x = - Math.PI / 2;
+      waterMesh.matrixAutoUpdate = false;
+      waterMesh.updateMatrix();
+
+      scene.add( waterMesh );
+
+    })
 
     // Mesh just for mouse raycasting
     var geometryRay = new THREE.PlaneBufferGeometry( BOUNDS, BOUNDS, 1, 1 );
@@ -211,7 +253,9 @@ const water = () => {
     }
 
     // Create compute shader to smooth the water surface and velocity
-    smoothShader = gpuCompute.createShaderMaterial( document.getElementById( 'smoothFragmentShader' ).textContent, { texture: { value: null } } );
+    smoothShader = gpuCompute.createShaderMaterial(
+      document.getElementById( 'smoothFragmentShader' ).textContent,
+      { texture: { value: null } } );
 
   }
 
@@ -308,14 +352,9 @@ const water = () => {
   }
 
   function onDocumentTouchMove( event ) {
-
     if ( event.touches.length === 1 ) {
-
       event.preventDefault();
-
       setMouseCoords( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
-
-
     }
 
   }
@@ -355,6 +394,8 @@ const water = () => {
 
     // Get compute output in custom uniform
     waterUniforms.heightmap.value = gpuCompute.getCurrentRenderTarget( heightmapVariable ).texture;
+    // console.log(waterUniforms.heightmap)
+
 
     // Render
     renderer.render( scene, camera );
