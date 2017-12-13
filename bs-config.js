@@ -17,7 +17,7 @@ module.exports = {
   logLevel: 'info',
   logConnections: true,
   logFileChanges: true,
-  reloadDelay: 0,
+  reloadDelay: 1000,
   reloadDebounce: 0,
   injectChanges: true,
   logSnippet: true,

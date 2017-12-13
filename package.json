@@ -11,10 +11,9 @@
   "description": "",
   "private": true,
   "scripts": {
-    "start:server": "rm -rf ./build && webpack --config  webpack.config.server.js",
-    "start": "webpack --config webpack.config.client.js -w",
-    "start1": "rm -rf ./build && npm-run-all --parallel start:server start:client",
-    "dev": "browser-sync start -s -b \"google chrome' -f \"./index.html\" \"public/*.css\" \"src/js/**",
+    "start:server": "http-server ./",
+    "start:watch": "webpack --config webpack.config.client.js -w",
+    "start": "npm-run-all --parallel start:server start:watch",
     "build": "webpack --config webpack.config.production.js"
   },
   "dependencies": {
@@ -25,7 +24,9 @@
     "imagesloaded": "^4.1.3",
     "morgan": "^1.8.2",
     "pug": "^2.0.0-rc.4",
-    "serve-favicon": "^2.4.4"
+    "regl": "^1.3.0",
+    "serve-favicon": "^2.4.4",
+    "three": "^0.88.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.1",
