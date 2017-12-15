@@ -134,7 +134,8 @@ void main() {
   var dispTex
 
   const texturImg = twgl.createTexture(gl, {
-    src: 'http://localhost:3000/public/dpmap.jpg',
+    // src: 'http://localhost:3000/public/dpmap.jpg',
+    src: 'public/dpmap.jpg',
     crossOrigin: '',
   }, function(err, texture, source) {
     dpMap = source;
