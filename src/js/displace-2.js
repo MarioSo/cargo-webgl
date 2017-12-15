@@ -123,8 +123,6 @@ void main() {
         disp[off + 3] = 255;
       }
     }
-
-
     return twgl.createTexture(gl, {
       src: disp,
     });
