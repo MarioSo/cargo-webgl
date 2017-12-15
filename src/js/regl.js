@@ -22,7 +22,12 @@ const reglProgram = () => {
 
 
     attributes: {
-      position: [[0, -1], [-1, 0], [1, 1]],
+      position: [
+        1.0,  1.0,
+        -1.0,  1.0,
+        1.0, -1.0,
+        -1.0, -1.0,
+      ],
     },
 
     uniforms: {

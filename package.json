@@ -3,10 +3,6 @@
   "version": "0.0.1",
   "author": "Mario Sommer",
   "main": "server.js",
-  "engines": {
-    "node": ">=6.3 <7",
-    "npm": ">=3.3 <4"
-  },
   "license": "ISC",
   "description": "",
   "private": true,
