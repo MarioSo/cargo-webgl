@@ -1,4 +1,5 @@
 import { find } from './utils/elements'
+import { addListener } from './utils/events'
 
 const Cargo = () => {
 
@@ -325,6 +326,12 @@ const Cargo = () => {
   stage.on('mousemove', pointerMove)
   stage.on('mouseup', pointerUp)
 
+  addListener('.js-reset-mesh', 'click', () => {
+    if (cloth) {
+      cloth.reset()
+    }
+  })
+
   // renderer.view.addEventListener('mousedown', pointerDown);
   // renderer.view.addEventListener('mouseenter', pointerDown);
   // renderer.view.addEventListener('touchstart', pointerDown);
@@ -335,49 +342,6 @@ const Cargo = () => {
   // document.body.addEventListener('mouseup', pointerUp);
   // document.body.addEventListener('touchend', pointerUp);
   // document.body.addEventListener('mouseleave', pointerUp);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // const render = () => {
-  //   requestAnimationFrame(render)
-  //   renderer.render(stage)
-  // }
-  //
-  // render()
 }
 
 export default Cargo

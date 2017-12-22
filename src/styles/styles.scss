@@ -30,3 +30,22 @@ img {
   position: absolute;
   left: -9999em;
 }
+
+.buttons {
+  position: absolute;
+  left: 10%;
+  top: 20%;
+}
+
+.btn {
+  background-color: white;
+  color: black;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.dg {
+  display: none;
+}
+
