@@ -86,7 +86,6 @@ void main() {
 
   var mixAmount = 0.03;
 
-  console.log(canvas)
   // var gl = $("canvas").getContext("webgl");
   var gl = canvas.getContext("webgl");
   var m4 = twgl.m4;
