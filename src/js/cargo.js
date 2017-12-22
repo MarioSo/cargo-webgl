@@ -165,20 +165,16 @@ const Cargo = () => {
   ;(function update() {
     requestAnimationFrame(update);
     if ( cloth ) {
-      cloth.update(0.016)
+      // cloth.update(0.016)
+      cloth.update(0.001)
     }
 
     brush.x = renderer.plugins.interaction.mouse.global.x
     brush.y = renderer.plugins.interaction.mouse.global.y
-    // brush.x = mouse.x;
-    // brush.y = mouse.y;
-
-
     renderer.render(stage);
   })(0)
 
   /*////////////////////////////////////////*/
-
 
   const twoPi = Math.PI * 2;
   const ease = Elastic.easeOut.config(1.2, 0.4);
@@ -192,7 +188,6 @@ const Cargo = () => {
     }
 
     animateTo(nx, ny, force, callback){
-
       if ( !this.resetting || force ) {
         let dx = nx - this.x
         let dy = ny - this.y
@@ -200,8 +195,8 @@ const Cargo = () => {
         this.resetting = true;
 
         TweenMax.to(this,
-          Math.min(1.25, Math.max(0.4, dist / 40) ),
-          {
+          // Math.min(1.25, Math.max(0.4, dist / 40) ), {
+          Math.min(2, Math.max(0.4, dist / 10) ), {
             x: nx,
             y: ny,
             ease: ease,
@@ -225,7 +220,6 @@ const Cargo = () => {
     }
 
     update (delta) {
-
       let dx;
       let dy;
 
@@ -291,21 +285,13 @@ const Cargo = () => {
           mesh.vertices[i+1] = point.y;
         }
       });
-
     }
   }
 
   function pointerMove(e) {
-    // let pointer = e.touches ? e.touches[0] : e;
-
     let lp = e.data.getLocalPosition(stage)
     mouse.px = mouse.x || lp.x
     mouse.py = mouse.y || lp.y
-    // mouse.x = pointer.clientX
-    // mouse.y = pointer.clientY
-
-    // console.log(mouse)
-    // console.log(e)
     mouse.x = lp.x
     mouse.y = lp.y
   }
@@ -331,17 +317,6 @@ const Cargo = () => {
       cloth.reset()
     }
   })
-
-  // renderer.view.addEventListener('mousedown', pointerDown);
-  // renderer.view.addEventListener('mouseenter', pointerDown);
-  // renderer.view.addEventListener('touchstart', pointerDown);
-
-  // document.body.addEventListener('mousemove',pointerMove);
-  // document.body.addEventListener('touchmove', pointerMove);
-
-  // document.body.addEventListener('mouseup', pointerUp);
-  // document.body.addEventListener('touchend', pointerUp);
-  // document.body.addEventListener('mouseleave', pointerUp);
 }
 
 export default Cargo
